@@ -1,0 +1,16 @@
+param N := 3;  # Example with 3 data points
+param d := 2;  # Example with 2 features
+param C := 1.0;
+
+# Feature matrix (x[i, j])
+param x: 1 2 :=
+1 1.0 2.0
+2 2.0 3.0
+3 -1.0 -2.0;
+
+# Labels (y[i])
+param y :=
+1 1
+2 1
+3 -1;
+
