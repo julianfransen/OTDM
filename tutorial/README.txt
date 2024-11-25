@@ -5,6 +5,8 @@ In bash, run "ampl". Once the program is running, type this:
 "model svm.mod;"
 "data data.dat;"
 "solve;"
+display w, b, xi;
+
 Then you see the result. My terminal shows:
 ampl: option solver cplex;
 ampl: model svm.mod

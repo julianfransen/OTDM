@@ -1,0 +1,135 @@
+---
+title: 'OTDM - Constrained Optimization - SVM'
+author: "Julian Fransen, Danila Kokin"
+date: "2024-11-24"
+output:
+  html_document:
+    toc: true
+    toc_depth: '3'
+    df_print: paged
+editor_options:
+  chunk_output_type: console
+---
+
+
+## Primal SVM Problem
+
+We aim to solve the following optimization problem:
+
+\[
+\min_{w, \gamma, s} \frac{1}{2} w^T w + \nu e^T s
+\]
+
+### Subject to:
+\[
+Y(Aw + \gamma e) + s \geq e,
+\]
+\[
+s \geq 0,
+\]
+
+### Where:
+
+- **Decision Variables**:
+  \[
+  (w, \gamma, s) \in \mathbb{R}^{n+1+m},
+  \]
+  - \( w \in \mathbb{R}^n \): Weight vector for the hyperplane.
+  - \( \gamma \in \mathbb{R} \): Bias term.
+  - \( s \in \mathbb{R}^m \): Slack variables for handling misclassifications.
+
+- **Constants**:
+  - \( \nu > 0 \): Regularization parameter controlling the trade-off between margin size and misclassification penalty.
+  - \( A \in \mathbb{R}^{m \times n} \): Matrix where rows represent feature vectors of the data points.
+  - \( Y \in \mathbb{R}^{m \times m} \): Diagonal matrix of labels, where \( Y_{ii} = y_i \), and \( y_i \in \{-1, 1\} \).
+  - \( e \in \mathbb{R}^m \): Vector of ones (\( e = [1, 1, \ldots, 1]^T \)).
+
+### Explanation:
+
+1. The objective function minimizes:
+   - \( \frac{1}{2} w^T w \): Promotes a larger margin between the classes.
+   - \( \nu e^T s \): Penalizes misclassifications or margin violations.
+
+2. Constraints:
+   - \( Y(Aw + \gamma e) + s \geq e \):
+     - Ensures that each data point satisfies the margin constraint \( y_i (w^T a_i + \gamma) \geq 1 - s_i \), where \( a_i \) is the \( i \)-th row of \( A \).
+   - \( s \geq 0 \): Ensures slack variables are non-negative, allowing for soft-margin SVM.
+
+This formulation is a standard primal SVM problem expressed in vector notation.
+
+ampl
+model svm_primal.mod;
+data svm_data.dat;
+solve;
+display w, gamma, s;
+
+
+```{bash}
+echo "Generating data using generator"
+cd /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/data_generator
+./gensvmdat tes_raw.dat 1000 4624
+./gensvmdat trs_raw.dat 1000 7438042
+./gensvmdat tel_raw.dat 100000 4624
+./gensvmdat trl_raw.dat 100000 7438042
+
+chmod +x process.sh
+./process.sh tes_raw.dat tes.dat 1000
+./process.sh trs_raw.dat trs.dat 1000
+./process.sh tel_raw.dat tel.dat 100000
+./process.sh trl_raw.dat trl.dat 100000
+```
+
+Now we have generated training and test set, a small variant (100 data points) and a large one (100k data points).
+
+
+
+
+```{bash}
+# Copy the files to the target directories
+echo "Copying files to target directories"
+cd /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/data_generator
+cp tes.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
+cp trs.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
+cp tel.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
+cp trl.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
+
+cp tes.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
+cp trs.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
+cp tel.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
+cp trl.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
+echo "Files copied successfully"
+```
+
+Train with small dataset:
+
+```{bash}
+cd /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/ampl_linux-intel64/ampl <<EOF
+option solver cplex;
+model primal.mod;
+data trs.dat;
+let nu := 1.0;
+solve;
+display w, gamma;
+quit;
+EOF
+```
+
+if you want you can also display the slacks (display si;)
+
+
+
+```{bash}
+cd /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/ampl_linux-intel64/ampl <<EOF
+option solver cplex;
+model primal.mod;
+data trl.dat;
+let nu := 1.0;
+solve;
+display w, gamma;
+quit;
+EOF
+```
+
+

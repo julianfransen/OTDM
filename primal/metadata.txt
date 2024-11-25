@@ -1,0 +1,6 @@
+tr8k.dat
+
+422 misclassifications
+
+te2k
+119
