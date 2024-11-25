@@ -44,24 +44,37 @@ s \geq 0,
   - \( Y \in \mathbb{R}^{m \times m} \): Diagonal matrix of labels, where \( Y_{ii} = y_i \), and \( y_i \in \{-1, 1\} \).
   - \( e \in \mathbb{R}^m \): Vector of ones (\( e = [1, 1, \ldots, 1]^T \)).
 
-### Explanation:
 
-1. The objective function minimizes:
-   - \( \frac{1}{2} w^T w \): Promotes a larger margin between the classes.
-   - \( \nu e^T s \): Penalizes misclassifications or margin violations.
 
-2. Constraints:
-   - \( Y(Aw + \gamma e) + s \geq e \):
-     - Ensures that each data point satisfies the margin constraint \( y_i (w^T a_i + \gamma) \geq 1 - s_i \), where \( a_i \) is the \( i \)-th row of \( A \).
-   - \( s \geq 0 \): Ensures slack variables are non-negative, allowing for soft-margin SVM.
 
-This formulation is a standard primal SVM problem expressed in vector notation.
+# Dual
 
-ampl
-model svm_primal.mod;
-data svm_data.dat;
-solve;
-display w, gamma, s;
+
+---
+
+## Dual SVM Formulation
+
+We formulate the dual SVM model using explicit indices instead of matrix notation.
+
+### Objective Function
+\[
+\max_{\lambda} \quad \sum_{i=1}^m \lambda_i - \frac{1}{2} \sum_{i=1}^m \sum_{j=1}^m \lambda_i \lambda_j y_i y_j \left( \sum_{k=1}^n A_{ik} A_{jk} \right)
+\]
+
+### Subject to:
+1. \[
+   \sum_{i=1}^m \lambda_i y_i = 0
+   \]
+2. \[
+   0 \leq \lambda_i \leq \nu, \quad \forall i = 1, \dots, m
+   \]
+
+Where:
+
+- \( \lambda_i \): Dual variable for the \( i \)-th data point.
+- \( y_i \): Label of the \( i \)-th data point (\( \pm1 \)).
+- \( A_{ik} \): Feature \( k \) of the \( i \)-th data point.
+- \( \nu \): Regularization parameter.
 
 
 ```{bash}
@@ -72,18 +85,22 @@ cd /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/data_generator
 ./gensvmdat tel_raw.dat 100000 4624
 ./gensvmdat trl_raw.dat 100000 7438042
 
+
 chmod +x process.sh
 ./process.sh tes_raw.dat tes.dat 1000
 ./process.sh trs_raw.dat trs.dat 1000
 ./process.sh tel_raw.dat tel.dat 100000
 ./process.sh trl_raw.dat trl.dat 100000
+
 ```
 
 Now we have generated training and test set, a small variant (100 data points) and a large one (100k data points).
 
 
-
-
+cp teh.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
+cp trh.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
+cp teh.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
+cp trh.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
 ```{bash}
 # Copy the files to the target directories
 echo "Copying files to target directories"
@@ -93,14 +110,18 @@ cp trs.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
 cp tel.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
 cp trl.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
 
+
 cp tes.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
 cp trs.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
 cp tel.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
 cp trl.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
+
 echo "Files copied successfully"
 ```
 
-Train with small dataset:
+# Train with small dataset:
+
+### Primal
 
 ```{bash}
 cd /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
@@ -115,19 +136,17 @@ quit;
 EOF
 ```
 
-if you want you can also display the slacks (display si;)
-
-
+### Dual
 
 ```{bash}
-cd /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
+cd /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
 /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/ampl_linux-intel64/ampl <<EOF
 option solver cplex;
-model primal.mod;
-data trl.dat;
+model dual.mod;
+data trs.dat;
 let nu := 1.0;
 solve;
-display w, gamma;
+display lambda;
 quit;
 EOF
 ```

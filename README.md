@@ -8,3 +8,10 @@ OTDM Project 2
 - The report must include all the previous elements (AMPL code, results obtained, analysis of results, etc).
 - This assignment is to be done in groups of two and only two students.
 (Note: If you are using Windows, check that your Windows installation has Microsoft Visual Studio runtime libraries, otherwise you may have problems running gensvmdat.exe. If you experience such a problems, I recommed you to generate the data file with the Linux version (gensvmdat) in a Linux box, and then to copy the resulting file to Windows)
+
+
+-J implement dual and primal
+
+- find dataset
+
+- K create script /function that given (w* , gamma, test data set) -> hyperplane, predictions, accuracry/ f1
