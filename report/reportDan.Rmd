@@ -232,7 +232,6 @@ EOF
 ```
 #### Large dataset
 
-```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
 /Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
 option solver cplex;
@@ -245,15 +244,13 @@ solve;
 display n, gamma, w > mparams.dat;
 quit;
 EOF
-```
 
-```{bash}
+
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
 chmod +x fix_params.sh
 ./fix_params.sh
-```
 
-```{bash}
+
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
 /Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
 model eval.mod;
@@ -263,4 +260,3 @@ display results;
 display accuracy, precision, recall, f1_score;
 quit;
 EOF
-```
