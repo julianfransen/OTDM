@@ -153,7 +153,7 @@ model eval.mod;
 data tes.dat;
 data iparams.dat;
 display gamma, w;
-display results;
+#display results;
 display accuracy, precision, recall, f1_score;
 quit;
 EOF
@@ -207,6 +207,15 @@ data trs.dat;
 let nu := 1.0;
 
 solve;
+
+let {j in 1..n} w[j] := sum {i in 1..m} lambda[i] * y[i] * A[i,j];
+
+var gamma_vals {i in 1..m};
+let {i in 1..m} gamma_vals[i] := if lambda[i] > 0.01 and lambda[i] < nu*0.99 then (y[i] - sum {j in 1..n} w[j] * A[i, j]) else 0;
+var gamma_n {i in 1..m};
+let {i in 1..m} gamma_n[i] := if lambda[i] > 0.01 and lambda[i] < nu*0.99 then 1 else 0;
+let gamma := if sum {i in 1..m} gamma_n[i] > 0 then (sum {i in 1..m} gamma_vals[i]) / (sum {i in 1..m} gamma_n[i]) else 0;
+
 display n, gamma, w > mparams.dat;
 quit;
 EOF
@@ -225,13 +234,13 @@ model eval.mod;
 data tes.dat;
 data iparams.dat;
 display gamma, w;
-display results;
 display accuracy, precision, recall, f1_score;
 quit;
 EOF
 ```
 #### Large dataset
 
+```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
 /Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
 option solver cplex;
@@ -241,22 +250,31 @@ data tel.dat;
 let nu := 1.0;
 solve;
 
+var gamma_vals {i in 1..m};
+let {i in 1..m} gamma_vals[i] := if lambda[i] > 0.01 and lambda[i] < nu*0.99 then (y[i] - sum {j in 1..n} w[j] * A[i, j]) else 0;
+var gamma_n {i in 1..m};
+let {i in 1..m} gamma_n[i] := if lambda[i] > 0.01 and lambda[i] < nu*0.99 then 1 else 0;
+let gamma := if sum {i in 1..m} gamma_n[i] > 0 then (sum {i in 1..m} gamma_vals[i]) / (sum {i in 1..m} gamma_n[i]) else 0;
+
 display n, gamma, w > mparams.dat;
 quit;
 EOF
+```
 
-
+```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
 chmod +x fix_params.sh
 ./fix_params.sh
+```
 
-
+```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
 /Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
 model eval.mod;
-data tel.dat;
+data tes.dat;
 data iparams.dat;
-display results;
+display gamma, w;
 display accuracy, precision, recall, f1_score;
 quit;
 EOF
+```
