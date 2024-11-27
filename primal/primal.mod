@@ -24,4 +24,3 @@ subject to Margin_Constraint {i in 1..m}:
 
 subject to Slack_Nonnegativity {i in 1..m}:
     si[i] >= 0;
-
