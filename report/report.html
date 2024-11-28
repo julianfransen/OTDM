@@ -1629,64 +1629,48 @@ display: none;
 
 <div id="TOC">
 <ul>
-<li><a href="#section-1-implement-svm-in-ampl" id="toc-section-1-implement-svm-in-ampl">Section 1: implement SVM in
-AMPL</a>
-<ul>
-<li><a href="#data-generation-and-preprocessing" id="toc-data-generation-and-preprocessing">Data generation and
-preprocessing</a>
-<ul>
 <li><a href="#primal-svm-problem" id="toc-primal-svm-problem">Primal SVM
-Problem</a></li>
+Problem</a>
+<ul>
+<li><a href="#subject-to" id="toc-subject-to">Subject to:</a></li>
+<li><a href="#where" id="toc-where">Where:</a></li>
+</ul></li>
+<li><a href="#dual" id="toc-dual">Dual</a>
+<ul>
 <li><a href="#dual-svm-formulation" id="toc-dual-svm-formulation">Dual
-SVM Formulation</a></li>
-<li><a href="#the-separation-hyperplane-in-svm" id="toc-the-separation-hyperplane-in-svm">The Separation Hyperplane in
-SVM</a></li>
+SVM Formulation</a>
+<ul>
+<li><a href="#objective-function" id="toc-objective-function">Objective
+Function</a></li>
+<li><a href="#subject-to-1" id="toc-subject-to-1">Subject to:</a></li>
 </ul></li>
 </ul></li>
+<li><a href="#copy-the-files-to-the-target-directories" id="toc-copy-the-files-to-the-target-directories">Copy the files to the
+target directories</a></li>
 <li><a href="#train-with-small-dataset" id="toc-train-with-small-dataset">Train with small dataset:</a>
 <ul>
 <li><a href="#primal" id="toc-primal">Primal</a></li>
-<li><a href="#dual" id="toc-dual">Dual</a></li>
-<li><a href="#evaluation" id="toc-evaluation">Evaluation</a></li>
+<li><a href="#dual-1" id="toc-dual-1">Dual</a></li>
 </ul></li>
-<li><a href="#section-2-applying-svms-to-new-dataset." id="toc-section-2-applying-svms-to-new-dataset.">Section 2: applying
-SVMs to new dataset.</a></li>
 </ul>
 </div>
 
-<div id="section-1-implement-svm-in-ampl" class="section level1">
-<h1>Section 1: implement SVM in AMPL</h1>
-<p>In this first section, we generate data using the generators given,
-and use this as a use case for SVMs. We implement both the primal and
-dual in AMPL.</p>
-<div id="data-generation-and-preprocessing" class="section level2">
-<h2>Data generation and preprocessing</h2>
-<p>We generate the data using <code>gensvdat</code>, where we use our 2
-students identifier numbers for the seed for training and test,
-e.g. :</p>
-<p><code>./gensvmdat tes_raw.dat 100 4624        # te =  test, s = small -&gt; tes</code></p>
-<p><code>./gensvmdat trl_raw.dat 100 7438042     # tr = train, l = large -&gt; trl</code></p>
-<p>We create 4 files in total: a small set of 100 points and a large one
-of 100k points. We use the same size for testing and training. After
-creating the raw data files, we utilize a shell script which performs
-processing so make sure that the data files can be loaded into AMPL.
-This consist of adding a header including variables <code>m</code> and
-<code>n</code>, removing the <code>*</code> symbol and displaying in
-terminal the number of misclassifications. Finally, we copy the
-processed data files to the <code>primal/</code> and <code>dual/</code>
-directories.</p>
-<div id="primal-svm-problem" class="section level3">
-<h3>Primal SVM Problem</h3>
+<div id="primal-svm-problem" class="section level2">
+<h2>Primal SVM Problem</h2>
 <p>We aim to solve the following optimization problem:</p>
 <p><span class="math display">\[
 \min_{w, \gamma, s} \frac{1}{2} w^T w + \nu e^T s
 \]</span></p>
-<p>subject to: <span class="math display">\[
+<div id="subject-to" class="section level3">
+<h3>Subject to:</h3>
+<p><span class="math display">\[
 Y(Aw + \gamma e) + s \geq e,
 \]</span> <span class="math display">\[
 s \geq 0,
 \]</span></p>
-<p>where:</p>
+</div>
+<div id="where" class="section level3">
+<h3>Where:</h3>
 <ul>
 <li><strong>Decision Variables</strong>: <span class="math display">\[
 (w, \gamma, s) \in \mathbb{R}^{n+1+m},
@@ -1716,21 +1700,33 @@ ones (<span class="math inline">\(e = [1, 1, \ldots,
 </ul></li>
 </ul>
 </div>
-<div id="dual-svm-formulation" class="section level3">
-<h3>Dual SVM Formulation</h3>
+</div>
+<div id="dual" class="section level1">
+<h1>Dual</h1>
+<hr />
+<div id="dual-svm-formulation" class="section level2">
+<h2>Dual SVM Formulation</h2>
 <p>We formulate the dual SVM model using explicit indices instead of
 matrix notation.</p>
-<p>Objective Function <span class="math display">\[
+<div id="objective-function" class="section level3">
+<h3>Objective Function</h3>
+<p><span class="math display">\[
 \max_{\lambda} \quad \sum_{i=1}^m \lambda_i - \frac{1}{2} \sum_{i=1}^m
 \sum_{j=1}^m \lambda_i \lambda_j y_i y_j \left( \sum_{k=1}^n A_{ik}
 A_{jk} \right)
 \]</span></p>
-<p>subject to: 1. <span class="math display">\[
-   \sum_{i=1}^m \lambda_i y_i = 0
-   \]</span> 2. <span class="math display">\[
-   0 \leq \lambda_i \leq \nu, \quad \forall i = 1, \dots, m
-   \]</span></p>
-<p>where:</p>
+</div>
+<div id="subject-to-1" class="section level3">
+<h3>Subject to:</h3>
+<ol style="list-style-type: decimal">
+<li><span class="math display">\[
+\sum_{i=1}^m \lambda_i y_i = 0
+\]</span></li>
+<li><span class="math display">\[
+0 \leq \lambda_i \leq \nu, \quad \forall i = 1, \dots, m
+\]</span></li>
+</ol>
+<p>Where:</p>
 <ul>
 <li><span class="math inline">\(\lambda_i\)</span>: Dual variable for
 the <span class="math inline">\(i\)</span>-th data point.</li>
@@ -1739,113 +1735,90 @@ the <span class="math inline">\(i\)</span>-th data point.</li>
 <li><span class="math inline">\(\nu\)</span>: Regularization
 parameter.</li>
 </ul>
-</div>
-<div id="the-separation-hyperplane-in-svm" class="section level3">
-<h3>The Separation Hyperplane in SVM</h3>
-<p>The separation hyperplane in a Support Vector Machine (SVM) is
-determined by <span class="math inline">\(\mathbf{w}\)</span> (the
-weight vector) and <span class="math inline">\(\gamma\)</span> (the bias
-term). It defines the decision boundary that separates the two classes.
-The equation of the hyperplane is: <span class="math display">\[
-\sum_{j=1}^n w_j x_j + \gamma = 0
-\]</span></p>
-<p>where: - <span class="math inline">\(\mathbf{w} = [w_1, w_2, \dots,
-w_n]\)</span> is the weight vector, - <span class="math inline">\(\gamma\)</span> is the bias term, - <span class="math inline">\(\mathbf{x} = [x_1, x_2, \dots, x_n]\)</span>
-represents the coordinates of a point in <span class="math inline">\(n\)</span>-dimensional space.</p>
-<p>The decision rule for classification is: <span class="math display">\[
-f(\mathbf{x}) = \text{sign} \left( \sum_{j=1}^n w_j x_j + \gamma \right)
-\]</span></p>
-<ul>
-<li>If <span class="math inline">\(f(\mathbf{x}) &gt; 0\)</span>,
-classify as <span class="math inline">\(+1\)</span>.</li>
-<li>If <span class="math inline">\(f(\mathbf{x}) &lt; 0\)</span>,
-classify as <span class="math inline">\(-1\)</span>.</li>
-</ul>
-<p>Since the separation hyperplane only depends on <code>w</code> and
-<span class="math inline">\(\gamma\)</span>, we know that the if these
-are the same for the primal and dual, then the hyperplane will be the
-same as well. To find the the values of <code>w</code> and <span class="math inline">\(\gamma\)</span> for the dual problem, we use these
-formulas: <span class="math display">\[
-w = \sum_{i=1}^m \lambda_i y_i \phi (x_i)
-\]</span> where <span class="math inline">\(\phi\)</span> is the
-identity matrix, in this particular case. <span class="math display">\[
-\gamma = y_k - \sum_{j=1}^n w_j \cdot A_{k,j}
-\]</span> where <code>k</code> is the index of the first support vector.
-We will find support vectors based on the property: <span class="math inline">\(0 &lt; \lambda_k &lt; \nu\)</span> for all <span class="math inline">\(k \in SV\)</span>.</p>
+<p>echo “Generating data using generator” cd
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/data_generator ./gensvmdat
+tes_raw.dat 1000 4624 ./gensvmdat trs_raw.dat 1000 7438042 ./gensvmdat
+tel_raw.dat 100000 4624 ./gensvmdat trl_raw.dat 100000 7438042</p>
+<p>chmod +x process.sh ./process.sh tes_raw.dat tes.dat 1000
+./process.sh trs_raw.dat trs.dat 1000 ./process.sh tel_raw.dat tel.dat
+100000 ./process.sh trl_raw.dat trl.dat 100000</p>
+<p>Now we have generated training and test set, a small variant (100
+data points) and a large one (100k data points).</p>
+<p>cp teh.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/ cp
+trh.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/ cp teh.dat
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/ cp trh.dat
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/</p>
 </div>
 </div>
+</div>
+<div id="copy-the-files-to-the-target-directories" class="section level1">
+<h1>Copy the files to the target directories</h1>
+<p>echo “Copying files to target directories” cd
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/data_generator cp tes.dat
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/ cp trs.dat
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/ cp tel.dat
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/ cp trl.dat
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/</p>
+<p>cp tes.dat /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/ cp trs.dat
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/ cp tel.dat
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/ cp trl.dat
+/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/</p>
+<p>echo “Files copied successfully”</p>
 </div>
 <div id="train-with-small-dataset" class="section level1">
 <h1>Train with small dataset:</h1>
 <div id="primal" class="section level3">
 <h3>Primal</h3>
-<pre class="bash"><code>cd /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/primal/
-/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/ampl_linux-intel64/ampl &lt;&lt;EOF
+<pre class="bash"><code>cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
+/Users/danilakokin/Downloads/ampl_macos64/ampl &lt;&lt;EOF
 option solver cplex;
 model primal.mod;
 data trs.dat;
-let nu := 0.9;
+data tes.dat;
+
+display m;
+display test_m;
+let nu := 1.0;
+
 solve;
-display w, gamma;
+display accuracy, precision, recall, f1_score;
 quit;
 EOF</code></pre>
-<pre><code>## CPLEX 22.1.1.0: optimal solution; objective 45.1830374
+<pre><code>## m = 1000
+## 
+## test_m = 1000
+## 
+## CPLEX 22.1.1.0: optimal solution; objective 406.3344042
 ## 11 separable QP barrier iterations
 ## No basis.
-## w [*] :=
-## 1  1.28474
-## 2  1.97146
-## 3  2.35625
-## 4  2.05919
-## ;
-## 
-## gamma = -3.65763</code></pre>
+## accuracy = 0.524
+## precision = 0.524
+## recall = 1
+## f1_score = 0.687664</code></pre>
 </div>
-<div id="dual" class="section level3">
+<div id="dual-1" class="section level3">
 <h3>Dual</h3>
-<pre class="bash"><code>cd /home/julian/uni_folder/OTDM/OTDM_p2/OTDM/dual/
-/home/julian/uni_folder/OTDM/OTDM_p2/OTDM/ampl_linux-intel64/ampl &lt;&lt;EOF
+<pre class="bash"><code>cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
+/Users/danilakokin/Downloads/ampl_macos64/ampl &lt;&lt;EOF
 option solver cplex;
 model dual.mod;
 data trs.dat;
-let nu := 0.9;
+data tes.dat;
+
+let nu := 1.0;
 solve;
-param w {j in 1..n};
-for {j in 1..n} { 
-    let w[j] := sum {i in 1..m} lambda[i] * y[i] * A[i, j];
-}
-param svi := 2;
-param gamma := y[svi] - sum {j in 1..n} w[j] * A[svi, j];
-display w, gamma;
+
+display accuracy, precision, recall, f1_score;
 quit;
 EOF</code></pre>
-<pre><code>## CPLEX 22.1.1.0: optimal solution; objective 45.18303736
-## 12 QP barrier iterations
+<pre><code>## CPLEX 22.1.1.0: optimal solution; objective 320.511461
+## 21 QP barrier iterations
 ## No basis.
-## w [*] :=
-## 1  1.28474
-## 2  1.97146
-## 3  2.35625
-## 4  2.05919
-## ;
-## 
-## gamma = -3.65763</code></pre>
-<p>As you can see, the values for the objective function,
-<code>w*</code> and <span class="math inline">\(\gamma\)</span> are
-identical (at least up to 5 decimals) for the dual and the primal, which
-means they found both exactly the same optimal hyperplane. This is
-consistent with theory: the dual should be exactly the same as the
-primal, except with fewer constraints.</p>
+## accuracy = 0.524
+## precision = 0.524
+## recall = 1
+## f1_score = 0.687664</code></pre>
 </div>
-<div id="evaluation" class="section level2">
-<h2>Evaluation</h2>
-<p>… plz implement here Dan</p>
-</div>
-</div>
-<div id="section-2-applying-svms-to-new-dataset." class="section level1">
-<h1>Section 2: applying SVMs to new dataset.</h1>
-<p>… should also be straight forward.</p>
-<p>…</p>
 </div>
 
 
