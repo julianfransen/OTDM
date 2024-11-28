@@ -113,7 +113,7 @@ where $\phi$ is the identity matrix, in this particular case.
 \]
 where `k` is the index of the first support vector. We will find support vectors based on the property: $0 < \lambda_k < \nu$ for all $k \in SV$.
 
-# Train with small dataset:
+# Train:
 
 ### Primal
 
@@ -127,29 +127,18 @@ model primal.mod;
 data trs.dat;
 let nu := 0.9;
 solve;
-display n, gamma, w > mparams.dat;
+display n, gamma, w;
+display n, gamma, w > sparams.dat;
 quit;
 EOF
-```
-```{bash}
-cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
-chmod +x fix_params.sh
-./fix_params.sh
 ```
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
-/Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
-option solver cplex;
-model eval.mod;
-data tes.dat;
-data iparams.dat;
-display gamma, w;
-#display results;
-display accuracy, precision, recall, f1_score;
-quit;
-EOF
+chmod +x fix_params.sh
+./fix_params.sh sparams.dat
 ```
+
 #### Large dataset
 
 ```{bash}
@@ -158,11 +147,10 @@ cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
 option solver cplex;
 model primal.mod;
 data trl.dat;
-
-let nu := 1.0;
-
+let nu := 0.9;
 solve;
-display n, gamma, w > mparams.dat;
+display n, gamma, w;
+display n, gamma, w > lparams.dat;
 quit;
 EOF
 ```
@@ -170,21 +158,9 @@ EOF
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
 chmod +x fix_params.sh
-./fix_params.sh
+./fix_params.sh lparams.dat
 ```
 
-```{bash}
-cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
-/Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
-option solver cplex;
-model eval.mod;
-data tel.dat;
-data iparams.dat;
-display gamma, w;
-display accuracy, precision, recall, f1_score;
-quit;
-EOF
-```
 ### Dual
 
 #### Small dataset
@@ -204,18 +180,212 @@ for {j in 1..n} {
 param svi := 2;
 param gamma := y[svi] - sum {j in 1..n} w[j] * A[svi, j];
 display w, gamma;
+display n, gamma, w > sparams.dat;
 quit;
 EOF
 ```
 
+```{bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
+chmod +x fix_params.sh
+./fix_params.sh sparams.dat
+```
+
+#### Large dataset
+
+#### ``` {bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
+/Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
+option solver cplex;
+model dual.mod;
+data trl.dat;
+let nu := 0.9;
+solve;
+param w {j in 1..n};
+for {j in 1..n} { 
+    let w[j] := sum {i in 1..m} lambda[i] * y[i] * A[i, j];
+}
+param svi := 2;
+param gamma := y[svi] - sum {j in 1..n} w[j] * A[svi, j];
+display w, gamma;
+display n, gamma, w > lparams.dat;
+quit;
+EOF
+#### ```
+
+#### ``` {bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
+chmod +x fix_params.sh
+./fix_params.sh lparams.dat
+#### ```
+
 As you can see, the values for the objective function, `w*` and $\gamma$ are identical (at least up to 5 decimals) for the dual and the primal, which means they found both exactly the same optimal hyperplane. This is consistent with theory: the dual should be exactly the same as the primal, except with fewer constraints. 
 
-## Evaluation
+# Evaluation
 
-... plz implement here Dan
+### Primal
+
+#### Evaluation on small dataset 
+
+```{bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
+/Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
+option solver cplex;
+model eval.mod;
+data tes.dat;
+data sparamsformated.dat;
+display accuracy, precision, recall, f1_score;
+quit;
+EOF
+```
+
+#### Evaluation on large dataset
+
+```{bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
+/Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
+option solver cplex;
+model eval.mod;
+data tel.dat;
+data lparamsformated.dat;
+display accuracy, precision, recall, f1_score;
+quit;
+EOF
+```
+
+### Dual
+
+#### Evaluation on small dataset 
+
+```{bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
+/Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
+option solver cplex;
+model eval.mod;
+data tes.dat;
+data sparamsformated.dat;
+display accuracy, precision, recall, f1_score;
+quit;
+EOF
+```
+
+#### Evaluation on large dataset
+
+#### ``` {bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
+/Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
+option solver cplex;
+model eval.mod;
+data tel.dat;
+data lparamsformated.dat;
+display accuracy, precision, recall, f1_score;
+quit;
+EOF
+#### ```
 
 # Section 2: applying SVMs to new dataset. 
 
+```{r}
+# Step 1: Load the data
+df <- read.csv("/Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/data_formatter/mushroom_cleaned.csv")
 
-... should also be straight forward.
-...
+# Step 2: Convert 'class' column to binary variable (1 and -1)
+df$class <- ifelse(df$class == 1, 1, -1)
+
+# Step 3: Remove the 'id' column
+df$id <- NULL
+
+# Step 4: Split the data into train and test sets
+set.seed(123)  # For reproducibility
+trainll <- sample(1:nrow(df), size = nrow(df) / 2)  # Randomly sample 50% of the rows for training
+testll <- setdiff(1:nrow(df), trainll)  # The remaining rows for testing
+
+train <- df[trainll, ]
+test <- df[testll, ]
+
+# Step 5: Normalize train data (except target)
+# Identify numeric columns (excluding 'class')
+numeric_cols <- names(train)[sapply(train, is.numeric) & names(train) != "class"]
+
+# Compute min and max values for each numeric column in the training set
+min_vals <- sapply(train[, numeric_cols], min, na.rm = TRUE)
+max_vals <- sapply(train[, numeric_cols], max, na.rm = TRUE)
+
+# Define normalization function
+normalize <- function(x, min_val, max_val) {
+  (x - min_val) / (max_val - min_val)
+}
+
+# Apply normalization to the train set
+for (col_name in numeric_cols) {
+  min_val <- min_vals[col_name]
+  max_val <- max_vals[col_name]
+  train[[col_name]] <- normalize(train[[col_name]], min_val, max_val)
+}
+
+# Step 6: Normalize test data (except target) based on the train normalizer
+for (col_name in numeric_cols) {
+  min_val <- min_vals[col_name]
+  max_val <- max_vals[col_name]
+  test[[col_name]] <- normalize(test[[col_name]], min_val, max_val)
+}
+
+# Step 7: Display summary and row counts for train and test sets
+summary(train)
+cat("Number of rows in train set:", nrow(train), "\n\n")
+
+summary(test)
+cat("Number of rows in test set:", nrow(test), "\n")
+
+train_file <- "/Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/data_formatter/trm.csv"
+test_file <- "/Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/data_formatter/tem.csv"
+
+write.csv(train, file = train_file, row.names = FALSE)
+write.csv(test, file = test_file, row.names = FALSE)
+```
+
+```{bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/data_formatter
+chmod +x csv_to_dat.sh
+./csv_to_dat.sh trm.csv trm.dat
+./csv_to_dat.sh tem.csv tem.dat
+
+chmod +x move_file.sh
+./move_file.sh trm.dat /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
+./move_file.sh tem.dat /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
+./move_file.sh trm.dat /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
+./move_file.sh tem.dat /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
+```
+### Primal
+
+```{bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
+/Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
+option solver cplex;
+model primal.mod;
+data trm.dat;
+let nu := 0.9;
+solve;
+display n, gamma, w;
+display n, gamma, w > mparams.dat;
+quit;
+EOF
+```
+
+```{bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
+chmod +x fix_params.sh
+./fix_params.sh mparams.dat
+```
+
+```{bash}
+cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
+/Users/danilakokin/Downloads/ampl_macos64/ampl <<EOF
+option solver cplex;
+model eval.mod;
+data tem.dat;
+data mparamsformated.dat;
+display accuracy, precision, recall, f1_score;
+quit;
+EOF
+```

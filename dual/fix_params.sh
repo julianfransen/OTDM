@@ -1,11 +1,18 @@
 #!/bin/bash
 
-# Input file
-INPUT_FILE="mparams.dat"
-# Output file
-OUTPUT_FILE="iparams.dat"
+# Check if input file is given
+if [ -z "$1" ]; then
+    echo "Usage: $0 input_file"
+    exit 1
+fi
 
-# Begin writing to the output file
+# Input file from command-line argument
+INPUT_FILE="$1"
+
+# Generate output file name by removing the extension and adding 'fixed.dat'
+OUTPUT_FILE="${INPUT_FILE%.*}formated.dat"
+
+# Begin processing
 echo "Processing $INPUT_FILE into $OUTPUT_FILE..."
 
 # Create or overwrite the output file
