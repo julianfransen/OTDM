@@ -16,7 +16,7 @@ var si {1..m} >= 0;          # Slack variables (non-negative)
 
 # Objective Function
 minimize SVM_Objective:
-    0.5 * (n+1) * sum {j in 1..n} w[j]^2 + nu * sum {i in 1..m} si[i];
+    0.5 * sum {j in 1..n} w[j]^2 + nu * sum {i in 1..m} si[i];
 
 # Constraints
 subject to Margin_Constraint {i in 1..m}:
