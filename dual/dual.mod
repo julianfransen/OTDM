@@ -10,6 +10,7 @@ param data {1..m, 1..(n+1)}; # Full data matrix including labels as last column
 param A {i in 1..m, j in 1..n} := data[i, j];  # Feature matrix
 param y {i in 1..m} := data[i, (n+1)];        # Labels (+1 or -1)
 
+
 # Precompute Kernel Matrix (dot products of features scaled by labels)
 param K {i in 1..m, j in 1..m} := y[i] * y[j] * sum {k in 1..n} A[i, k] * A[j, k];
 
