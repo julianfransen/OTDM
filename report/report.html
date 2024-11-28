@@ -1633,14 +1633,14 @@ display: none;
 AMPL</a>
 <ul>
 <li><a href="#data-generation-and-preprocessing" id="toc-data-generation-and-preprocessing">Data generation and
-preprocessing</a></li>
+preprocessing</a>
+<ul>
 <li><a href="#primal-svm-problem" id="toc-primal-svm-problem">Primal SVM
 Problem</a></li>
 <li><a href="#dual-svm-formulation" id="toc-dual-svm-formulation">Dual
-SVM Formulation</a>
-<ul>
-<li><a href="#objective-function" id="toc-objective-function">Objective
-Function</a></li>
+SVM Formulation</a></li>
+<li><a href="#the-separation-hyperplane-in-svm" id="toc-the-separation-hyperplane-in-svm">The Separation Hyperplane in
+SVM</a></li>
 </ul></li>
 </ul></li>
 <li><a href="#train-with-small-dataset" id="toc-train-with-small-dataset">Train with small dataset:</a>
@@ -1675,9 +1675,8 @@ This consist of adding a header including variables <code>m</code> and
 terminal the number of misclassifications. Finally, we copy the
 processed data files to the <code>primal/</code> and <code>dual/</code>
 directories.</p>
-</div>
-<div id="primal-svm-problem" class="section level2">
-<h2>Primal SVM Problem</h2>
+<div id="primal-svm-problem" class="section level3">
+<h3>Primal SVM Problem</h3>
 <p>We aim to solve the following optimization problem:</p>
 <p><span class="math display">\[
 \min_{w, \gamma, s} \frac{1}{2} w^T w + \nu e^T s
@@ -1717,13 +1716,11 @@ ones (<span class="math inline">\(e = [1, 1, \ldots,
 </ul></li>
 </ul>
 </div>
-<div id="dual-svm-formulation" class="section level2">
-<h2>Dual SVM Formulation</h2>
+<div id="dual-svm-formulation" class="section level3">
+<h3>Dual SVM Formulation</h3>
 <p>We formulate the dual SVM model using explicit indices instead of
 matrix notation.</p>
-<div id="objective-function" class="section level3">
-<h3>Objective Function</h3>
-<p><span class="math display">\[
+<p>Objective Function <span class="math display">\[
 \max_{\lambda} \quad \sum_{i=1}^m \lambda_i - \frac{1}{2} \sum_{i=1}^m
 \sum_{j=1}^m \lambda_i \lambda_j y_i y_j \left( \sum_{k=1}^n A_{ik}
 A_{jk} \right)
@@ -1742,6 +1739,39 @@ the <span class="math inline">\(i\)</span>-th data point.</li>
 <li><span class="math inline">\(\nu\)</span>: Regularization
 parameter.</li>
 </ul>
+</div>
+<div id="the-separation-hyperplane-in-svm" class="section level3">
+<h3>The Separation Hyperplane in SVM</h3>
+<p>The separation hyperplane in a Support Vector Machine (SVM) is
+determined by <span class="math inline">\(\mathbf{w}\)</span> (the
+weight vector) and <span class="math inline">\(\gamma\)</span> (the bias
+term). It defines the decision boundary that separates the two classes.
+The equation of the hyperplane is: <span class="math display">\[
+\sum_{j=1}^n w_j x_j + \gamma = 0
+\]</span></p>
+<p>where: - <span class="math inline">\(\mathbf{w} = [w_1, w_2, \dots,
+w_n]\)</span> is the weight vector, - <span class="math inline">\(\gamma\)</span> is the bias term, - <span class="math inline">\(\mathbf{x} = [x_1, x_2, \dots, x_n]\)</span>
+represents the coordinates of a point in <span class="math inline">\(n\)</span>-dimensional space.</p>
+<p>The decision rule for classification is: <span class="math display">\[
+f(\mathbf{x}) = \text{sign} \left( \sum_{j=1}^n w_j x_j + \gamma \right)
+\]</span></p>
+<ul>
+<li>If <span class="math inline">\(f(\mathbf{x}) &gt; 0\)</span>,
+classify as <span class="math inline">\(+1\)</span>.</li>
+<li>If <span class="math inline">\(f(\mathbf{x}) &lt; 0\)</span>,
+classify as <span class="math inline">\(-1\)</span>.</li>
+</ul>
+<p>Since the separation hyperplane only depends on <code>w</code> and
+<span class="math inline">\(\gamma\)</span>, we know that the if these
+are the same for the primal and dual, then the hyperplane will be the
+same as well. To find the the values of <code>w</code> and <span class="math inline">\(\gamma\)</span> for the dual problem, we use these
+formulas: <span class="math display">\[
+w = \sum_{i=1}^m \lambda_i y_i \phi (x_i)
+\]</span> where <span class="math inline">\(\phi\)</span> is the
+identity matrix, in this particular case. <span class="math display">\[
+\gamma = y_k - \sum_{j=1}^n w_j \cdot A_{k,j}
+\]</span> where <code>k</code> is the index of the first support vector.
+We will find support vectors based on the property: <span class="math inline">\(0 &lt; \lambda_k &lt; \nu\)</span> for all <span class="math inline">\(k \in SV\)</span>.</p>
 </div>
 </div>
 </div>
@@ -1781,7 +1811,6 @@ data trs.dat;
 let nu := 0.9;
 solve;
 param w {j in 1..n};
-param w {j in 1..n};
 for {j in 1..n} { 
     let w[j] := sum {i in 1..m} lambda[i] * y[i] * A[i, j];
 }
@@ -1793,9 +1822,6 @@ EOF</code></pre>
 <pre><code>## CPLEX 22.1.1.0: optimal solution; objective 45.18303736
 ## 12 QP barrier iterations
 ## No basis.
-## 
-## w is already defined
-## context:  param  &gt;&gt;&gt; w  &lt;&lt;&lt; {j in 1..n};
 ## w [*] :=
 ## 1  1.28474
 ## 2  1.97146

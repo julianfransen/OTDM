@@ -25,7 +25,7 @@ We generate the data using `gensvdat`, where we use our 2 students identifier nu
 
 We create 4 files in total: a small set of 100 points and a large one of 100k points. We use the same size for testing and training. After creating the raw data files, we utilize a shell script which performs processing so make sure that the data files can be loaded into AMPL. This consist of adding a header including variables `m` and `n`, removing the `*` symbol and displaying in terminal the number of misclassifications. Finally, we copy the processed data files to the `primal/` and `dual/` directories. 
 
-## Primal SVM Problem
+### Primal SVM Problem
 
 We aim to solve the following optimization problem:
 
@@ -58,11 +58,11 @@ where:
   - \( e \in \mathbb{R}^m \): Vector of ones (\( e = [1, 1, \ldots, 1]^T \)).
 
 
-## Dual SVM Formulation
+### Dual SVM Formulation
 
 We formulate the dual SVM model using explicit indices instead of matrix notation.
 
-### Objective Function
+Objective Function
 \[
 \max_{\lambda} \quad \sum_{i=1}^m \lambda_i - \frac{1}{2} \sum_{i=1}^m \sum_{j=1}^m \lambda_i \lambda_j y_i y_j \left( \sum_{k=1}^n A_{ik} A_{jk} \right)
 \]
@@ -81,6 +81,37 @@ where:
 - \( y_i \): Label of the \( i \)-th data point (\( \pm1 \)).
 - \( A_{ik} \): Feature \( k \) of the \( i \)-th data point.
 - \( \nu \): Regularization parameter.
+
+### The Separation Hyperplane in SVM
+
+The separation hyperplane in a Support Vector Machine (SVM) is determined by \( \mathbf{w} \) (the weight vector) and \( \gamma \) (the bias term). It defines the decision boundary that separates the two classes. The equation of the hyperplane is:
+\[
+\sum_{j=1}^n w_j x_j + \gamma = 0
+\]
+
+where:
+- \( \mathbf{w} = [w_1, w_2, \dots, w_n] \) is the weight vector,
+- \( \gamma \) is the bias term,
+- \( \mathbf{x} = [x_1, x_2, \dots, x_n] \) represents the coordinates of a point in \( n \)-dimensional space.
+
+
+The decision rule for classification is:
+\[
+f(\mathbf{x}) = \text{sign} \left( \sum_{j=1}^n w_j x_j + \gamma \right)
+\]
+
+- If \( f(\mathbf{x}) > 0 \), classify as \( +1 \).
+- If \( f(\mathbf{x}) < 0 \), classify as \( -1 \).
+
+Since the separation hyperplane only depends on `w` and $\gamma$, we know that the if these are the same for the primal and dual, then the hyperplane will be the same as well. To find the the values of `w` and $\gamma$ for the dual problem, we use these formulas:
+\[
+w = \sum_{i=1}^m \lambda_i y_i \phi (x_i)
+\]
+where $\phi$ is the identity matrix, in this particular case. 
+\[
+\gamma = y_k - \sum_{j=1}^n w_j \cdot A_{k,j}
+\]
+where `k` is the index of the first support vector. We will find support vectors based on the property: $0 < \lambda_k < \nu$ for all $k \in SV$. 
 
 # Train with small dataset:
 
@@ -109,7 +140,6 @@ model dual.mod;
 data trs.dat;
 let nu := 0.9;
 solve;
-param w {j in 1..n};
 param w {j in 1..n};
 for {j in 1..n} { 
     let w[j] := sum {i in 1..m} lambda[i] * y[i] * A[i, j];
