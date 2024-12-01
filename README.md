@@ -1,17 +1,36 @@
-# OTDM
-OTDM Project 2
+# OTDM - Constrained Optimization - SVM
 
-- Implement the primal and dual quadratic formulation of the support vector machine in AMPL.
-- Apply to a dataset obtained with the accompanying generator  (linux, windows and mac executables provided). Validate the SVM with data different from that of the training set.
-- For a good mark, you should apply the SVM  to one more (real-world) dataset. You can use datasets from repositories.
-- Compute the separation hyperplane from the dual model and check that it coincides with that of the primal model.
-- The report must include all the previous elements (AMPL code, results obtained, analysis of results, etc).
-- This assignment is to be done in groups of two and only two students.
-(Note: If you are using Windows, check that your Windows installation has Microsoft Visual Studio runtime libraries, otherwise you may have problems running gensvmdat.exe. If you experience such a problems, I recommed you to generate the data file with the Linux version (gensvmdat) in a Linux box, and then to copy the resulting file to Windows)
+This report focuses on implementing and analyzing the primal and dual quadratic formulations of the Support Vector Machine (SVM) using AMPL. The main objectives include applying the SVM to a dataset generated with the provided generator, validating the model on a separate external dataset, and analyzing its performance.
 
+## Repository Structure
 
--J implement dual and primal
+```
+  .
+  ├── data_formatter    # generation, formatting of the external dataset
+  ├── data_generator    # generation, formatting of the data given in the assignment
+  ├── dual              # model implementation and evaluation of dual SVM
+  ├── primal            # model implementation and evaluation of primal SVM
+  ├── report            # analysis
+  │   ├── report.html   # reproducibility script for the analysis
+  │   └── report.Rmd    # final report
+  └── tutorial          # tutorial given by the assignment
 
-- find dataset
+```
 
-- K create script /function that given (w* , gamma, test data set) -> hyperplane, predictions, accuracry/ f1
+## Getting Started
+
+### Prerequisites
+- AMPL is required to run the provided scripts and functions.
+
+### Running the Project
+1. Change paths for the primal and dual directories in the report.Rdm file to yours.
+2. Change path to ampl file to yours with respect to your operating system.
+
+Hint: replacement through `CMD + F` of:
+- `/Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2`
+- `/Users/danilakokin/Downloads/ampl_macos64/ampl`
+will do all the work
+
+## Authors
+- Julian Fransen
+- Danila Kokin

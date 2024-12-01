@@ -1,5 +1,5 @@
 param n_eval := 4;
-param gamma := 7.75875;
+param gamma := 7.59591;
 
 param w :=
 1  -5.98142
