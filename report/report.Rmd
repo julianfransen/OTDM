@@ -114,7 +114,11 @@ where $\phi$ is the identity matrix, in this particular case.
 where `k` is the index of the first support vector. We will find support vectors based on the property: $0 < \lambda_k < \nu$ for all $k \in SV$.
 
 
-### Primal on small dataset
+## Training
+
+### Primal
+
+#### Small dataset 
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
@@ -136,7 +140,7 @@ chmod +x fix_params.sh
 ./fix_params.sh sparams.dat
 ```
 
-### Primal on large dataset
+#### Large dataset 
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
@@ -158,7 +162,9 @@ chmod +x fix_params.sh
 ./fix_params.sh lparams.dat
 ```
 
-### Dual on small dataset
+### Dual
+
+#### Small dataset 
 
 To calculate the `w*` and $\gamma$ we use the aforementioned formulas, which we implement in a for loop in AMPL.
 
@@ -195,7 +201,7 @@ chmod +x fix_params.sh
 ./fix_params.sh sparams.dat
 ```
 
-### Dual on large dataset
+#### Large dataset
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
@@ -234,7 +240,9 @@ As you can see, the values for the objective function, `w*` and $\gamma$ are ide
 
 ## Evaluation
 
-### Small dataset 
+### Primal 
+
+#### Small dataset 
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
@@ -248,7 +256,7 @@ quit;
 EOF
 ```
 
-### Large dataset 
+#### Large dataset 
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
@@ -262,7 +270,9 @@ quit;
 EOF
 ```
 
-### Dual on small dataset 
+### Dual
+
+#### Small dataset 
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
@@ -446,7 +456,9 @@ chmod +x move_file.sh
 ./move_file.sh tem.dat /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
 ```
 
-### Primal model applied to money dataset
+### Primal 
+
+#### Model applied to money dataset
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
@@ -469,7 +481,7 @@ chmod +x fix_params.sh
 ./fix_params.sh mparams.dat
 ```
 
-### Primal model evalutation
+#### Model evalutation
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/primal
@@ -484,7 +496,9 @@ quit;
 EOF
 ```
 
-### Dual model applied to money dataset
+### Dual 
+
+#### Model applied to money dataset
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
@@ -520,7 +534,7 @@ chmod +x fix_params.sh
 ./fix_params.sh mparams.dat
 ```
 
-### Dual model evalutation
+#### model evalutation
 
 ```{bash}
 cd /Users/danilakokin/Desktop/UPC/Semester3/OTDM/OTDM_Project_2/dual
